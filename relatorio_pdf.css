@@ -1,0 +1,149 @@
+
+@page {
+    size: A4 landscape;
+    margin: 10mm;
+    @top-left {
+        content: element(header-primeira);
+    }
+    @bottom-center {
+        content: "Página " counter(page) " de " counter(pages);
+        font-size: 9px;
+    }
+}
+
+@page :first {
+    @top-left {
+        content: element(header-primeira);
+    }
+}
+
+@media print {
+  header#header-primeira {
+    position: running(header-primeira);
+  }
+
+  .logo-relatorio {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: left;
+    display: block;
+  }
+
+  .titulo-relatorio {
+    font-size: 14px;
+    text-align: left;
+    display: block;
+    margin-top: 4px;
+  }
+
+  .data-emissao {
+    font-size: 10px;
+    color: #555;
+    text-align: right;
+    display: block;
+  }
+
+  .wrapper-cabecalho {
+    padding: 8px 12px 0;
+    /* linha removida */
+  }
+
+  .tabela-cabecalho {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 28px; /* aumenta espaço abaixo do cabeçalho */
+  }
+
+  .tabela-cabecalho td {
+    vertical-align: top;
+    padding: 0;
+  }
+
+  .col-esquerda {
+    width: 75%;
+    text-align: left;
+  }
+
+  .col-direita {
+    width: 25%;
+    text-align: right;
+  }
+}
+
+body {
+    font-family: Arial, sans-serif;
+    font-size: 9px;
+    margin: 0;
+    padding: 0;
+}
+
+.wrapper-cabecalho {
+    padding: 8px 12px 0;
+}
+
+.tabela-cabecalho {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 28px;
+}
+
+.tabela-cabecalho td {
+    vertical-align: top;
+    padding: 0;
+}
+
+.logo-relatorio {
+    font-size: 20px;
+    font-weight: bold;
+    text-align: left;
+}
+
+.titulo-relatorio {
+    font-size: 14px;
+    text-align: left;
+    margin-top: 4px;
+}
+
+.data-emissao {
+    font-size: 10px;
+    color: #555;
+    text-align: right;
+}
+
+table.relatorio {
+    width: 100%;
+    border-collapse: collapse;
+    page-break-inside: auto;
+}
+
+.relatorio thead {
+    background-color: #f2f2f2;
+    display: table-header-group;
+}
+
+.relatorio th, .relatorio td {
+    border: 1px solid #ccc;
+    padding: 6px;
+    font-size: 9px;
+    text-align: left;
+    vertical-align: top;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+}
+
+.relatorio td, .relatorio tr, .relatorio td * {
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+.relatorio th:nth-child(even),
+.relatorio td:nth-child(even) {
+    background-color: #fafafa;
+}
+
+.assinatura {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 10px;
+    font-style: italic;
+}

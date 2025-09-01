@@ -1,0 +1,253 @@
+
+body {
+    font-family: "Segoe UI", sans-serif;
+    background-color: #f5f6fa;
+    margin: 0;
+    padding: 20px;
+}
+
+h1, h2, h3 {
+    color: #2c3e50;
+}
+
+h1 {
+    text-align: center;
+    font-size: 26px;
+    margin-bottom: 30px;
+}
+
+.cabecalho-logo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.cabecalho-info p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.quadro {
+    background-color: #ffffff;
+    border: 1px solid #dcdde1;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+table td, table th {
+    padding: 8px;
+    vertical-align: top;
+}
+
+input[type="text"],
+input[type="file"],
+textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+textarea {
+    resize: vertical;
+}
+
+input:focus,
+textarea:focus {
+    border-color: #4aa564;
+    outline: none;
+}
+
+.botao {
+    background-color: #4aa564;
+    color: white;
+    font-size: 16px;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.botao:hover {
+    background-color: #3d8f53;
+}
+
+.btn {
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.mt-2 {
+    margin-top: 10px;
+}
+
+.form-control {
+    border: 1px solid #ccc;
+    padding: 8px;
+    border-radius: 5px;
+}
+
+.intro {
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+input[data-mask="date"] {
+    width: 160px;
+}
+
+input[data-mask="money"] {
+    width: 200px;
+}
+
+/* Linha com assinatura texto + imagem */
+.linha-assinatura {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 0;
+}
+
+.linha-assinatura label {
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.linha-assinatura input[type="text"],
+.linha-assinatura input[type="file"] {
+    width: auto;
+    min-width: 220px;
+    flex: 1;
+}
+
+/* Alinhamento da tabela parecer final */
+.tabela-parecer input[type="text"] {
+    width: 100%;
+    padding: 6px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+.tabela-parecer th {
+    text-align: left;
+    padding-bottom: 8px;
+}
+.tabela-parecer td {
+    padding: 8px 5px;
+    vertical-align: middle;
+}
+
+/* Alinhamento dos campos com R$ */
+.linha-dinheiro {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 4px 0;
+}
+
+.linha-dinheiro label {
+    min-width: 130px;
+    font-weight: 500;
+    margin-right: 2px;
+}
+
+.linha-dinheiro .rs-prefix {
+    white-space: nowrap;
+    font-weight: 500;
+    margin-left: 10px;
+}
+
+.linha-dinheiro input[type="text"] {
+    flex: 1;
+    min-width: 180px;
+}
+
+
+/* Correção de alinhamento visual para tabelas com colunas separadas */
+td:nth-child(2) > .rs-prefix,
+td:nth-child(2) > input[type="text"] {
+    margin-left: -40px;
+}
+
+/* Força redução de espaçamento lateral */
+td input[type="text"] {
+    margin-left: 0 !important;
+}
+
+/* Ajuste fino apenas para células com "R$" */
+td:has(.rs-prefix) {
+    white-space: nowrap;
+    width: 1%;
+}
+
+#linkGerado input {
+    background-color: #f0f8ff;
+    border: 1px solid #b3d8ff;
+    padding: 8px;
+    font-size: 14px;
+    border-radius: 6px;
+    margin-top: 10px;
+    width: 100%;
+}
+/* ===============================
+   Estilo elegante para o menu lateral
+   =============================== */
+.sidebar {
+    width: 220px;
+    background: #f4f4f4; /* faixa cinza clara */
+    padding: 25px 15px;
+    height: 100vh;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.15); /* sombra lateral */
+    color: #333;
+    font-family: "Segoe UI", sans-serif;
+}
+
+.sidebar h2 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 25px;
+    color: #333;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.sidebar ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar li {
+    margin-bottom: 20px; /* espaçamento maior */
+}
+
+.sidebar a {
+    display: block;
+    padding: 10px 14px;
+    border-radius: 6px;
+    color: #333; /* mantém a cor da fonte */
+    font-size: 16px; /* aumenta a fonte */
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.sidebar a:hover {
+    background: #e0e0e0; /* hover suave */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transform: translateX(3px);
+}
