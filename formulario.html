@@ -1,0 +1,651 @@
+{% extends "base.html" %}
+{% block title %}Formulário GR10 A07 - Plantae{% endblock %}
+
+{% block content %}
+<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet"/>
+<div class="cabecalho-logo">
+<!-- <img alt="Logo Plantae" class="logo" src="{{ url_for('static', filename='logo.png') }}"/> -->
+<div class="cabecalho-info">
+<p><strong>Código da Circular:</strong> GR-10</p>
+<p><strong>Anexo:</strong> 07</p>
+<p><strong>Data de Publicação:</strong> 04.04.2025</p>
+<p><strong>Versão:</strong> 07</p>
+</div>
+</div>
+<h1>MONITORAMENTO DE PLD - GR10 A07</h1>
+
+<form id="formulario">
+
+<p class="intro">
+<strong>Prezado Gestor(a):</strong>
+<input name="nome_gestor_relacionamento" placeholder="Informe o Nome do Gestor de Relacionamento"
+style="margin-left: 10px; width: 50%;" type="text" value="{{ dados.get('nome_gestor_relacionamento', '') }}" />
+<br/>
+O cliente abaixo foi apontado pelo sistema de monitoramento de PLD. Para os itens abaixo sinalizados como “Sim” solicitamos seus comentários e, havendo dúvida em relação à operação ou preenchimento do formulário, favor entrar em contato com a Área de Riscos, Controles Internos e Compliance no e-mail: compliance@plantaeagrocredito.com.br.
+</p>
+
+<!-- Quadro 1 -->
+<div class="quadro">
+<h2>1. Identificação do Cliente </h2>
+<table>
+<tr>
+<td>Cliente:<br/><input name="cliente_nome" type="text" style="text-transform:uppercase;" value="{{ dados.get('cliente_nome', '') }}"/></td>
+<td>CPF/CNPJ:<br/><input name="cpf_cnpj" type="text" oninput="formatCPF_CNPJ(this)" value="{{ dados.get('cpf_cnpj', '') }}"/></td>
+</tr>
+<tr>
+<td>Nº Contrato/Operação:<br/>
+  <input
+    name="contrato"
+    id="contrato"
+    type="text"
+    inputmode="numeric"
+    autocomplete="off"
+    pattern="\d+"
+    title="Digite apenas números, sem espaços ou símbolos"
+    oninput="this.value = this.value.replace(/\D/g, '')"
+    onpaste="setTimeout(() => this.value = this.value.replace(/\D/g, ''), 0)"
+    maxlength="20"
+    value="{{ dados.get('contrato', '') }}"
+  />
+</td>
+<td>Data Pagamento Contrato/Operação:<br/><input class="data" name="data_pagamento" oninput="formatDate(this)" type="text" value="{{ dados.get('data_pagamento', '') }}"/></td>
+</tr>
+<tr>
+<td>Valor Contrato/Operação: R$ <br/><input name="valor" type="text" value="{{ dados.get('valor', '') }}" oninput="formatarMoeda(this)" /></td>                      
+<td>Classificação de Risco (Reputacional):<br/><input name="classificacao" type="text" value="{{ dados.get('classificacao', '') }}"/></td>
+</tr>
+</table>
+</div>
+
+<!-- Quadro 2 -->
+<div class="quadro">
+<h2>2. Dados Cadastrais</h2>
+<table>
+<tr>
+<td>Data de Nascimento / Fundação</td>
+<td><input class="data" name="data_nascimento" oninput="formatDate(this)" type="text" value="{{ dados.get('data_nascimento', '') }}"/></td>
+</tr>
+<tr>
+<td>Última Atualização Cadastral</td>
+<td><input class="data" name="data_atualizacao" oninput="formatDate(this)" type="text" value="{{ dados.get('data_atualizacao', '') }}"/></td>
+</tr>
+<tr>
+<td>Renda</td>
+<td>R$ <input name="renda" type="text" value="{{ dados.get('renda', '') }}" oninput="formatarMoeda(this)" /></td>
+</tr>
+<tr>
+<td>Faturamento</td>
+<td>R$ <input name="faturamento" type="text" value="{{ dados.get('faturamento', '') }}" oninput="formatarMoeda(this)" /></td>
+</tr>
+<tr>
+<td>Patrimônio</td>
+<td>R$ <input name="patrimonio" type="text" value="{{ dados.get('patrimonio', '') }}" oninput="formatarMoeda(this)" /></td>
+</tr>
+<tr>
+<td>Capacidade Financeira</td>
+<td>R$ <input name="capacidade" type="text" value="{{ dados.get('capacidade', '') }}" oninput="formatarMoeda(this)" /></td>
+</tr>
+<tr>
+<td>Limite Operacional</td>
+<td><input name="limite_operacional" type="text" value="{{ dados.get('limite_operacional', '') }}" /></td>
+</tr>
+</table>
+</div>
+<!-- Quadro 2.1 -->
+<div class="quadro">
+<h2>2.1. Perfil de movimentação do cliente no período analisado</h2>
+<table>
+<tr>
+<td>Movimento anual</td>
+<td>R$ <input name="movimento_anual" type="text" value="{{ dados.get('movimento_anual', '') }}" oninput="formatarMoeda(this)" /></td>
+</tr>
+<tr>
+<td>Movimento do mês analisado</td>
+<td>R$ <input name="movimento_mes" type="text" value="{{ dados.get('movimento_mes', '') }}" oninput="formatarMoeda(this)" /></td>
+</tr>
+<tr>
+<td>Valor médio operado (6 meses)</td>
+
+<td>R$ <input name="media_6_meses" type="text" value="{{ dados.get('media_6_meses', '') }}" oninput="formatarMoeda(this)" /></td>
+</tr>
+</table>
+</div>
+
+<!-- Responsáveis pelo Apontamento e Preenchimento -->
+<table border="1" style="width:100%; border-collapse:collapse; font-family:Arial; font-size:12px;">
+<tr>
+<td>Responsável Preenchimento Inicial: 
+  <input name="responsavel_preenchimento_inicial" id="responsavel_preenchimento_inicial" style="width: 60%;" type="text" value="{{ dados.get('responsavel_preenchimento_inicial', '') }}"/>
+</td>
+<td>Data do Preenchimento inicial: 
+  <input maxlength="10" name="data_preenchimento_inicial" id="data_preenchimento_inicial" oninput="formatDate(this)" placeholder="dd/mm/aaaa" type="text" value="{{ dados.get('data_preenchimento_inicial', '') }}"/>
+</td>
+</tr>
+<tr>
+<td>Responsável pelo Apontamento: 
+  <input name="responsavel_apontamento" id="responsavel_apontamento" style="width: 60%;" type="text" value="{{ dados.get('responsavel_apontamento', '') }}"/>
+</td>
+<td>Data do Apontamento: 
+  <input maxlength="10" name="data_apontamento" id="data_apontamento" oninput="formatDate(this)" placeholder="dd/mm/aaaa" type="text" value="{{ dados.get('data_apontamento', '') }}"/>
+</td>
+</tr>
+<tr>
+<td>Responsável pelo Preenchimento: 
+  <input name="responsavel_preenchimento" id="responsavel_preenchimento" style="width: 60%;" type="text" value="{{ dados.get('responsavel_preenchimento', '') }}"/>
+</td>
+<td>Data do Preenchimento: 
+  <input maxlength="10" name="data_preenchimento" id="data_preenchimento" oninput="formatDate(this)" placeholder="dd/mm/aaaa" type="text" value="{{ dados.get('data_preenchimento', '') }}"/>
+</td>
+</tr>
+</table>
+
+<!-- Quadro 3 -->
+<div class="quadro">
+<h3>3. Referência</h3>
+<p><strong>Instruções de preenchimento:</strong> Na tabela do item 3.1 deste documento listamos os alertas apontados para o cliente no período e estão agrupados por tipo, conforme referência abaixo:</p>
+<table border="1" style="width:100%; border-collapse:collapse; font-family:Arial; font-size:12px;">
+<tr><th>Referência</th><th>Descrição</th></tr>
+<tr><td>Histórico</td><td>Alertas referentes ao histórico do cliente</td></tr>
+<tr><td>Movimentação</td><td>Alertas referentes ao movimento do cliente</td></tr>
+<tr><td>Perfil</td><td>Alertas referentes ao perfil do cliente</td></tr>
+<tr><td>Cadastro</td><td>Alertas referentes ao cadastro do cliente</td></tr>
+</table>
+<p>Para cada alerta indicado como "Sim", assinalar com "X" a opção que melhor descreve o seu entendimento. As justificativas poderão ser incluídas no item 4. Comentários Adicionais:</p>
+<!-- Quadro 3.1 -->
+<div class="quadro">
+<h3>3.1. Quadro de Alertas</h3>
+<table border="1" style="width:100%; border-collapse:collapse; font-family:Arial; font-size:12px; text-align:left;">
+<tr>
+<th>Comentários do Gestor</th>
+<th>Ref.</th>
+<th>Descrição do Alerta</th>
+<th>Alerta</th>
+<th>(1)</th>
+<th>(2)</th>
+<th>(3)</th>
+<th>(4)</th>
+<th>(5)</th>
+</tr>
+<!-- Histórico -->
+<tr>
+<td>Histórico</td>
+<td>hist1</td>
+<td>Cliente com Histórico de Endividamento elevado no setor agrícola</td>
+<td><textarea name="hist1_alerta" rows="2" style="width: 100%;">{{ dados.get('hist1_alerta', '') }}</textarea></td>
+<td><input name="hist1_1" type="checkbox"/></td>
+<td><input name="hist1_2" type="checkbox"/></td>
+<td><input name="hist1_3" type="checkbox"/></td>
+<td><input name="hist1_4" type="checkbox"/></td>
+<td><input name="hist1_5" type="checkbox"/></td>
+</tr>
+<td>Histórico</td>
+<td>hist2</td>
+<td>Liquidações antecipadas frequentemente, ≥ a 2 contratos liquidados antecipadamente sequencialmente.</td>
+<td><textarea name="hist2_alerta" rows="2" style="width: 100%;">{{ dados.get('hist2_alerta', '') }}</textarea></td>
+<td><input name="hist2_1" type="checkbox"/></td>
+<td><input name="hist2_2" type="checkbox"/></td>
+<td><input name="hist2_3" type="checkbox"/></td>
+<td><input name="hist2_4" type="checkbox"/></td>
+<td><input name="hist2_5" type="checkbox"/></td>
+</tr>
+<!-- Movimentação -->
+<tr><td rowspan="5">Movimentação</td>
+<td>mov1</td>
+<td>Movimentação mensal 30% acima da capacidade financeira</td>
+<td><textarea name="mov1_alerta" rows="2" style="width: 100%;">{{ dados.get('mov1_alerta', '') }}</textarea></td>
+<td><input name="mov1_1" type="checkbox"/></td>
+<td><input name="mov1_2" type="checkbox"/></td>
+<td><input name="mov1_3" type="checkbox"/></td>
+<td><input name="mov1_4" type="checkbox"/></td>
+<td><input name="mov1_5" type="checkbox"/></td>
+</tr>
+<tr>
+<td>mov2</td>
+<td>Pagamento de Operação de Crédito em Conta de Terceiro</td>
+<td><textarea name="mov2_alerta" rows="2" style="width: 100%;">{{ dados.get('mov2_alerta', '') }}</textarea></td>
+<td><input name="mov2_1" type="checkbox"/></td>
+<td><input name="mov2_2" type="checkbox"/></td>
+<td><input name="mov2_3" type="checkbox"/></td>
+<td><input name="mov2_4" type="checkbox"/></td>
+<td><input name="mov2_5" type="checkbox"/></td>
+</tr>
+<tr>
+<td>mov3</td>
+<td>Devolução de Recurso para Conta de Terceiro</td>
+<td><textarea name="mov3_alerta" rows="2" style="width: 100%;">{{ dados.get('mov3_alerta', '') }}</textarea></td>
+<td><input name="mov3_1" type="checkbox"/></td>
+<td><input name="mov3_2" type="checkbox"/></td>
+<td><input name="mov3_3" type="checkbox"/></td>
+<td><input name="mov3_4" type="checkbox"/></td>
+<td><input name="mov3_5" type="checkbox"/></td>
+</tr>
+<tr>
+<td>mov4</td>
+<td>Liquidação Total ou Parcial, realizada por Terceiro ou por fonte pagadora distinta da prevista em contrato.</td>
+<td><textarea name="mov4_alerta" rows="2" style="width: 100%;">{{ dados.get('mov4_alerta', '') }}</textarea></td>
+<td><input name="mov4_1" type="checkbox"/></td>
+<td><input name="mov4_2" type="checkbox"/></td>
+<td><input name="mov4_3" type="checkbox"/></td>
+<td><input name="mov4_4" type="checkbox"/></td>
+<td><input name="mov4_5" type="checkbox"/></td>
+</tr>
+<tr>
+<td>mov5</td>
+<td>Liquidação Total ou Parcial Antecipada</td>
+<td><textarea name="mov5_alerta" rows="2" style="width: 100%;">{{ dados.get('mov5_alerta', '') }}</textarea></td>
+<td><input name="mov5_1" type="checkbox"/></td>
+<td><input name="mov5_2" type="checkbox"/></td>
+<td><input name="mov5_3" type="checkbox"/></td>
+<td><input name="mov5_4" type="checkbox"/></td>
+<td><input name="mov5_5" type="checkbox"/></td>
+</tr>
+<!-- Perfil -->
+<tr><td rowspan="5">Perfil</td>
+<td>perfil1</td>
+<td>Cliente sediado num país GAFI/Paraíso Fiscal</td>
+<td><textarea name="perfil1_alerta" rows="2" style="width: 100%;">{{ dados.get('perfil1_alerta', '') }}</textarea></td>
+<td><input name="perfil1_1" type="checkbox"/></td>
+<td><input name="perfil1_2" type="checkbox"/></td>
+<td><input name="perfil1_3" type="checkbox"/></td>
+<td><input name="perfil1_4" type="checkbox"/></td>
+<td><input name="perfil1_5" type="checkbox"/></td>
+</tr>
+<tr>
+<td>perfil2</td>
+<td>Atividade sensível (Econômica/Profissional) ou Praça de Fronteira</td>
+<td><textarea name="perfil2_alerta" rows="2" style="width: 100%;">{{ dados.get('perfil2_alerta', '') }}</textarea></td>
+<td><input name="perfil2_1" type="checkbox"/></td>
+<td><input name="perfil2_2" type="checkbox"/></td>
+<td><input name="perfil2_3" type="checkbox"/></td>
+<td><input name="perfil2_4" type="checkbox"/></td>
+<td><input name="perfil2_5" type="checkbox"/></td>
+</tr>
+<tr>
+<td>perfil3</td>
+<td>Cliente menor de 24 de anos ou maior de 80 anos / PJ com fundação menor que 1 ano</td>
+<td><textarea name="perfil3_alerta" rows="2" style="width: 100%;">{{ dados.get('perfil3_alerta', '') }}</textarea></td>
+<td><input name="perfil3_1" type="checkbox"/></td>
+<td><input name="perfil3_2" type="checkbox"/></td>
+<td><input name="perfil3_3" type="checkbox"/></td>
+<td><input name="perfil3_4" type="checkbox"/></td>
+<td><input name="perfil3_5" type="checkbox"/></td>
+</tr>
+<tr>
+<td>perfil4</td>
+<td>Cliente classificado como “Grandes Fortunas”</td>
+<td><textarea name="perfil4_alerta" rows="2" style="width: 100%;">{{ dados.get('perfil4_alerta', '') }}</textarea></td>
+<td><input name="perfil4_1" type="checkbox"/></td>
+<td><input name="perfil4_2" type="checkbox"/></td>
+<td><input name="perfil4_3" type="checkbox"/></td>
+<td><input name="perfil4_4" type="checkbox"/></td>
+<td><input name="perfil4_5" type="checkbox"/></td>
+</tr>
+<tr>
+<td>perfil5</td>
+<td>Cliente PEP – Pessoa politicamente exposta</td>
+<td><textarea name="perfil5_alerta" rows="2" style="width: 100%;">{{ dados.get('perfil5_alerta', '') }}</textarea></td>
+<td><input name="perfil5_1" type="checkbox"/></td>
+<td><input name="perfil5_2" type="checkbox"/></td>
+<td><input name="perfil5_3" type="checkbox"/></td>
+<td><input name="perfil5_4" type="checkbox"/></td>
+<td><input name="perfil5_5" type="checkbox"/></td>
+</tr>
+<!-- Cadastro -->
+<tr><td rowspan="5">Cadastro</td>
+<td>cad1</td>
+<td>Valores de Patrimônio, Renda ou Faturamento inconsistentes</td>
+<td><textarea name="cad1_alerta" rows="2" style="width: 100%;">{{ dados.get('cad1_alerta', '') }}</textarea></td>
+<td><input name="cad1_1" type="checkbox"/></td>
+<td><input name="cad1_2" type="checkbox"/></td>
+<td><input name="cad1_3" type="checkbox"/></td>
+<td><input name="cad1_4" type="checkbox"/></td>
+<td><input name="cad1_5" type="checkbox"/></td>
+</tr>
+<tr>
+<td>cad2</td>
+<td>Cadastro Desatualizado</td>
+<td><textarea name="cad2_alerta" rows="2" style="width: 100%;">{{ dados.get('cad2_alerta', '') }}</textarea></td>
+<td><input name="cad2_1" type="checkbox"/></td>
+<td><input name="cad2_2" type="checkbox"/></td>
+<td><input name="cad2_3" type="checkbox"/></td>
+<td><input name="cad2_4" type="checkbox"/></td>
+<td><input name="cad2_5" type="checkbox"/></td>
+</tr>
+<tr>
+<td>cad4</td>
+<td>Resistência ao fornecimento de informações ou informações falsas</td>
+<td><textarea name="cad4_alerta" rows="2" style="width: 100%;">{{ dados.get('cad4_alerta', '') }}</textarea></td>
+<td><input name="cad4_1" type="checkbox"/></td>
+<td><input name="cad4_2" type="checkbox"/></td>
+<td><input name="cad4_3" type="checkbox"/></td>
+<td><input name="cad4_4" type="checkbox"/></td>
+<td><input name="cad4_5" type="checkbox"/></td>
+</tr>
+<tr>
+<td>cad5</td>
+<td>Ausência de Beneficiário Final</td>
+<td><textarea name="cad5_alerta" rows="2" style="width: 100%;">{{ dados.get('cad5_alerta', '') }}</textarea></td>
+<td><input name="cad5_1" type="checkbox"/></td>
+<td><input name="cad5_2" type="checkbox"/></td>
+<td><input name="cad5_3" type="checkbox"/></td>
+<td><input name="cad5_4" type="checkbox"/></td>
+<td><input name="cad5_5" type="checkbox"/></td>
+</tr>
+<tr>
+<td>cad6</td>
+<td>Inconsistências Cadastrais Diversas</td>
+<td><textarea name="cad6_alerta" rows="2" style="width: 100%;">{{ dados.get('cad6_alerta', '') }}</textarea></td>
+<td><input name="cad6_1" type="checkbox"/></td>
+<td><input name="cad6_2" type="checkbox"/></td>
+<td><input name="cad6_3" type="checkbox"/></td>
+<td><input name="cad6_4" type="checkbox"/></td>
+<td><input name="cad6_5" type="checkbox"/></td>
+</tr>
+</table>
+</div>
+
+<!-- Quadro 4 -->
+<div class="quadro">
+<h2>4. Comentários Adicionais - Apontamento</h2>
+<textarea name="comentario_adicional_apontamento" style="width: 100%; height: 100px;">{{ dados.get('comentario_adicional_apontamento', '') }}</textarea><br/>
+<label>Data / Assinaturas / Identificação:</label>
+<input class="data" name="q4_data" oninput="formatDate(this)" type="text" value="{{ dados.get('q4_data', '') }}"/>
+<label>Assinatura / Identificação (texto):</label>
+<input name="q4_texto" type="text" value="{{ dados.get('q4_texto', '') }}"/>
+<label>Assinatura / Identificação (imagem):</label>
+<input accept="image/*" name="q4_imagem" type="file"/>
+</div>
+
+<!-- Quadro 5 -->
+<div class="quadro">
+<h2>5. Pareceres Adicionais - Resposta</h2>
+<textarea name="pareceres_adicionais_resposta" style="width: 100%; height: 100px;">{{ dados.get('pareceres_adicionais_resposta', '') }}</textarea><br/>
+<label>Data / Assinaturas / Identificação:</label>
+<input class="data" name="q5_data" oninput="formatDate(this)" type="text" value="{{ dados.get('q5_data', '') }}"/>
+<label>Assinatura / Identificação (texto):</label>
+<input name="q5_texto" type="text" value="{{ dados.get('q5_texto', '') }}"/>
+<label>Assinatura / Identificação (imagem):</label>
+<input accept="image/*" name="q5_imagem" type="file"/>
+</div>
+
+<!-- Quadro 6 -->
+<div class="quadro">
+<h2>6. Comentários Adicionais – Área de Crédito</h2>
+<textarea name="comentarios_credito" style="width: 100%; height: 100px;">{{ dados.get('comentarios_credito', '') }}</textarea><br/>
+<label>Data / Assinaturas / Identificação:</label>
+<input class="data" name="q6_data" oninput="formatDate(this)" type="text" value="{{ dados.get('q6_data', '') }}"/>
+<label>Assinatura / Identificação (texto):</label>
+<input name="q6_texto" type="text" value="{{ dados.get('q6_texto', '') }}"/>
+<label>Assinatura / Identificação (imagem):</label>
+<input accept="image/*" name="q6_imagem" type="file"/>
+</div>
+
+<!-- Quadro 7 -->
+<div class="quadro">
+<h2>7. Parecer Final da Área de Riscos, Controles Internos e Compliance</h2>
+<table>
+<tr><th>Descrição</th><th>Sim / Não</th></tr>
+<tr><td>Comunicar ao COAF</td><td><input name="coaf" type="text" value="{{ dados.get('coaf', '') }}"/></td></tr>
+<tr><td>Arquivar o alerta</td><td><input name="arquivar_alerta" type="text" value="{{ dados.get('arquivar_alerta', '') }}"/></td></tr>
+<tr><td>Bloquear o Cadastro</td><td><input name="bloquear_cadastro" type="text" value="{{ dados.get('bloquear_cadastro', '') }}"/></td></tr>
+<tr><td>Solicitar atualização cadastral</td><td><input name="solicitar_atualizacao" type="text" value="{{ dados.get('solicitar_atualizacao', '') }}"/></td></tr>
+<tr><td>Outros</td><td><input name="outros_parecer" type="text" value="{{ dados.get('outros_parecer', '') }}"/></td></tr>
+</table>
+<label>Data / Assinaturas / Identificação:</label>
+<input class="data" name="q7_data" oninput="formatDate(this)" type="text" value="{{ dados.get('q7_data', '') }}"/>
+<label>Assinatura / Identificação (texto):</label>
+<input name="q7_texto" type="text" value="{{ dados.get('q7_texto', '') }}"/>
+<label>Assinatura / Identificação (imagem):</label>
+<input accept="image/*" name="q7_imagem" type="file"/>
+</div>
+<!-- Quadro 8 -->
+<div class="quadro">
+<h2>8. Parecer final - Diretoria Responsável por PLD/FT</h2>
+<textarea name="parecer_diretoria" style="width: 100%; height: 100px;">{{ dados.get('parecer_diretoria', '') }}</textarea><br/>
+<label>Data / Assinaturas / Identificação:</label>
+<input class="data" name="q8_data" oninput="formatDate(this)" type="text" value="{{ dados.get('q8_data', '') }}"/>
+<label>Assinatura / Identificação (texto):</label>
+<input name="q8_texto" type="text" value="{{ dados.get('q8_texto', '') }}"/>
+<label>Assinatura / Identificação (imagem):</label>
+<input accept="image/*" name="q8_imagem" type="file"/>
+
+<!-- Botão Salvar -->
+<button class="botao" type="submit">Salvar Formulário</button>
+
+<!-- Div para exibir o link gerado -->
+<div id="linkGerado" style="margin-top: 20px; padding: 15px; border: 1px solid #b3d8ff; background-color: #e6f4ff; border-radius: 10px; font-family: Arial, sans-serif;"></div>
+
+<!-- Botão para visualizar o PDF gerado -->
+{% if dados.contrato %}
+    <button onclick="window.location.href='/visualizar_pdf?contrato={{ dados.contrato }}'" class="botao">
+        Visualizar PDF
+    </button>
+{% else %}
+    <button onclick="alert('⚠️ Nenhum contrato disponível para gerar PDF.')" disabled class="botao">
+        Visualizar PDF
+    </button>
+{% endif %}
+
+<script>
+window.onbeforeunload = function() {
+    return "Deseja salvar as alterações antes de sair?";
+};
+
+// Função que captura os dados do formulário quando o formulário é enviado
+document.getElementById("formulario").addEventListener("submit", async function (e) {
+    e.preventDefault(); // Impede o recarregamento da página
+
+    const form = e.target;
+    const dados = new FormData(form);
+    const dadosJson = {};
+
+    // Ajuste seguro: ignora arquivos vazios e campos tipo file
+    dados.forEach((value, key) => {
+        if (value instanceof File) {
+            if (value.name) {
+                // Se quiser tratar arquivos no futuro, aqui é o lugar
+            }
+            return; // Ignora campos de imagem por ora
+        }
+        dadosJson[key] = value;
+    });
+
+    console.log("🔍 Dados capturados no formulário:", dadosJson);
+
+
+    // Verifica se o campo contrato foi preenchido antes de enviar
+    if (!dadosJson.contrato) {
+        alert("⚠️ Informe o número do contrato antes de salvar.");
+        return;
+    }
+
+    try {
+        const resposta = await fetch("/salvar_json", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(dadosJson)  // Envia os dados como JSON
+        });
+
+        if (resposta.ok) {
+            const respostaJson = await resposta.json();
+            // Gera e exibe o link para continuar preenchendo o formulário
+            const contrato = dadosJson.contrato;
+            const link = respostaJson.link_proximo;  // Usando o link da resposta
+
+            const a = document.createElement("a");
+            a.href = link;
+            a.textContent = "Clique aqui para continuar preenchendo este formulário";
+            a.style.display = "block";
+            a.style.marginTop = "10px";
+            a.style.fontWeight = "bold";
+            a.target = "_blank";
+
+            const inputLink = document.createElement("input");
+            inputLink.type = "text";
+            inputLink.value = link;
+            inputLink.style.width = "100%";
+            inputLink.readOnly = true;
+
+            const linkDiv = document.getElementById("linkGerado");
+            linkDiv.innerHTML = "<p><strong>✅ Formulário salvo com sucesso!</strong><br>Envie o link abaixo ao próximo responsável:</p>";
+            linkDiv.appendChild(a);
+            linkDiv.appendChild(inputLink);
+
+            // Adiciona botão "Enviar por e-mail"
+            const botaoEmail = document.createElement("button");
+            botaoEmail.textContent = "Enviar por e-mail";
+            botaoEmail.className = "botao";
+            botaoEmail.onclick = function () {
+                const contrato = dadosJson.contrato;
+                window.open(`/enviar_email?contrato=${contrato}`, "_blank");
+            };
+            linkDiv.appendChild(botaoEmail);
+        } else {
+            alert("❌ Ocorreu um erro ao salvar o formulário.");
+        }
+    } catch (error) {
+        console.error("Erro ao salvar:", error);
+        alert("❌ Ocorreu um erro ao salvar o formulário.");
+    }
+});
+</script>
+
+</form>
+{% endblock %}
+
+{% block scripts %}
+
+{{ super() }}
+<script>
+function formatarMoeda(campo) {
+    let valor = campo.value.replace(/\D/g, '');
+    if (valor === '') {
+        campo.value = '';
+        return;
+    }
+    valor = (parseInt(valor) / 100).toFixed(2);
+    valor = valor.replace('.', ',');
+    valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+    campo.value = 'R$ ' + valor;
+}
+function formatDate(input) {
+    let v = input.value.replace(/\D/g, '');
+    if (v.length > 2 && v.length <= 4)
+        v = v.replace(/(\d{2})(\d+)/, '$1/$2');
+    else if (v.length > 4)
+        v = v.replace(/(\d{2})(\d{2})(\d+)/, '$1/$2/$3');
+    input.value = v;
+}
+function formatCPF_CNPJ(input) {
+    let v = input.value.replace(/\D/g, '');
+    if (v.length <= 11) {
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d)/, '$1.$2');
+        v = v.replace(/(\d{3})(\d{1,2})$/, '$1-$2');
+    } else {
+        v = v.replace(/^(\d{2})(\d)/, "$1.$2");
+        v = v.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+        v = v.replace(/\.(\d{3})(\d)/, ".$1/$2");
+        v = v.replace(/(\d{4})(\d)/, "$1-$2");
+    }
+    input.value = v;
+}
+// Preencher o campo "contrato" automaticamente se estiver na URL
+window.onload = function () {
+    const params = new URLSearchParams(window.location.search);
+    const contrato = params.get("contrato");
+    if (contrato) {
+        const campoContrato = document.querySelector('input[name="contrato"]');
+        if (campoContrato) {
+            campoContrato.value = contrato;
+        }
+    }
+};
+
+
+
+
+
+// Função que captura os dados do formulário quando o formulário é enviado
+document.getElementById("formulario").addEventListener("submit", async function (e) {
+    e.preventDefault(); // Impede o recarregamento da página
+
+    const form = e.target;
+    const dados = new FormData(form);
+    const dadosJson = {};
+
+    // Ajuste seguro: ignora arquivos vazios e campos tipo file
+    dados.forEach((value, key) => {
+        if (value instanceof File) {
+            if (value.name) {
+                // Se quiser tratar arquivos no futuro, aqui é o lugar
+            }
+            return; // Ignora campos de imagem por ora
+        }
+        dadosJson[key] = value;
+    });
+
+    console.log("🔍 Dados capturados no formulário:", dadosJson);
+
+
+    // Verifica se o campo contrato foi preenchido antes de enviar
+    if (!dadosJson.contrato) {
+        alert("⚠️ Informe o número do contrato antes de salvar.");
+        return;
+    }
+
+    try {
+        const resposta = await fetch("/salvar_json", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(dadosJson)  // Envia os dados como JSON
+        });
+
+        if (resposta.ok) {
+            const respostaJson = await resposta.json();
+            // Gera e exibe o link para continuar preenchendo o formulário
+            const contrato = dadosJson.contrato;
+            const link = respostaJson.link_proximo;  // Usando o link da resposta
+
+            const a = document.createElement("a");
+            a.href = link;
+            a.textContent = "Clique aqui para continuar preenchendo este formulário";
+            a.style.display = "block";
+            a.style.marginTop = "10px";
+            a.style.fontWeight = "bold";
+            a.target = "_blank";
+
+            const inputLink = document.createElement("input");
+            inputLink.type = "text";
+            inputLink.value = link;
+            inputLink.style.width = "100%";
+            inputLink.readOnly = true;
+
+            const linkDiv = document.getElementById("linkGerado");
+            linkDiv.innerHTML = "<p><strong>✅ Formulário salvo com sucesso!</strong><br>Envie o link abaixo ao próximo responsável:</p>";
+            linkDiv.appendChild(a);
+            linkDiv.appendChild(inputLink);
+
+            // Adiciona botão "Enviar por e-mail"
+            const botaoEmail = document.createElement("button");
+            botaoEmail.textContent = "Enviar por e-mail";
+            botaoEmail.className = "botao";
+            botaoEmail.onclick = function () {
+                const contrato = dadosJson.contrato;
+                window.open(`/enviar_email?contrato=${contrato}`, "_blank");
+            };
+            linkDiv.appendChild(botaoEmail);
+        } else {
+            alert("❌ Ocorreu um erro ao salvar o formulário.");
+        }
+    } catch (error) {
+        console.error("Erro ao salvar:", error);
+        alert("❌ Ocorreu um erro ao salvar o formulário.");
+    }
+});
+</script>
+{% endblock %}

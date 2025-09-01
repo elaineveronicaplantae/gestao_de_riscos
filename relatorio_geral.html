@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório de Monitaramento, Seleção e Análise de Operações Atípicas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .campo-longo { white-space: pre-wrap; }
+        .data-hora { font-size: 0.9rem; color: #666; margin-top: 10px; }
+        @media print {
+            button, form input, form select { display: none !important; }
+            body { background: #fff; }
+            table { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body class="container mt-4">
+    <h2>Relatório de Monitaramento, Seleção e Análise de Operações Atípicas</h2>
+
+    <form class="row g-3" method="get">
+        <div class="col-md-3">
+            <label class="form-label">Período Inicial</label>
+            <input type="date" name="data_inicio" class="form-control" value="{{ request.args.get('data_inicio', '') }}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Período Final</label>
+            <input type="date" name="data_fim" class="form-control" value="{{ request.args.get('data_fim', '') }}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Gerente de Relacionamento</label>
+            <input type="text" name="gerente" class="form-control" placeholder="Buscar por nome" value="{{ request.args.get('gerente', '') }}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Cliente</label>
+            <input type="text" name="cliente" class="form-control" placeholder="Buscar por nome" value="{{ request.args.get('cliente', '') }}">
+        </div>
+        {% if modo_auditoria %}
+        <div class="col-md-3">
+            <label class="form-label">Parecer Final</label>
+            <select name="parecer_final" class="form-select">
+                <option value="">Todos</option>
+                {% for p in pareceres %}
+                    <option value="{{ p }}" {% if request.args.get('parecer_final') == p %}selected{% endif %}>
+                        {% if p == "coaf" %}Comunicar ao COAF{% elif p == "arquivar_alerta" %}Arquivar o alerta{% elif p == "bloquear_cadastro" %}Bloquear o cadastro{% elif p == "solicitar_atualizacao" %}Solicitar atualização{% elif p == "outros_parecer" %}Outros{% else %}{{ p|capitalize }}{% endif %}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        {% endif %}
+        <div class="col-md-3">
+            <label class="form-label">Modo</label>
+            <select name="modo" class="form-select" id="modo-select" onchange="solicitaSenhaAuditoria()">
+                <option value="geral" {% if modo == 'geral' %}selected{% endif %}>Geral</option>
+                <option value="auditoria" {% if modo == 'auditoria' %}selected{% endif %}>Auditoria</option>
+            </select>
+            <input type="hidden" name="senha" id="senha-modo-auditoria" value="{{ senha or '' }}">
+        </div>
+        <div class="col-md-12 text-end">
+            <button type="submit" class="btn btn-primary mt-3">Buscar</button>
+            <button type="button" class="btn btn-outline-secondary mt-3" onclick="window.print()">Imprimir / PDF</button>
+        </div>
+    </form>
+    <script>
+    function solicitaSenhaAuditoria() {
+        var modo = document.getElementById('modo-select').value;
+        var inputSenha = document.getElementById('senha-modo-auditoria');
+        if (modo === 'auditoria') {
+            var senha = prompt("Informe a senha para o modo Auditoria:");
+            if (senha === null) {
+                document.getElementById('modo-select').value = 'geral';
+                inputSenha.value = '';
+            } else {
+                inputSenha.value = senha;
+            }
+        } else {
+            inputSenha.value = '';
+        }
+    }
+    </script>
+
+    <p class="data-hora">Data e hora da geração: {{ data_hora }}</p>
+
+    {% if not dados %}
+        <div class="alert alert-info mt-4">Nenhum registro encontrado para os filtros informados.</div>
+    {% endif %}
+
+    {% for item in dados %}
+        <h5 class="mt-4">Contrato: {{ item.contrato.strip() }}</h5>
+        <table class="table table-bordered">
+            {% for chave, valor in item.items() %}
+                {# Exibe só os campos permitidos (não sensíveis) no modo geral #}
+                {% if
+                    (modo_auditoria or (chave not in pareceres and chave not in ['parecer_diretoria', 'q7_data', 'q7_texto', 'q8_data', 'q8_texto', 'comentario_adicional_apontamento', 'comentarios_credito']))
+                    and valor and valor|string and valor|string|trim and chave != 'contrato'
+                %}
+                    {% if valor|length > 60 %}
+                        {% set classe = 'campo-longo' %}
+                    {% else %}
+                        {% set classe = '' %}
+                    {% endif %}
+                    <tr>
+                        <th>{{ chave.replace('_', ' ').capitalize() }}</th>
+                        <td class="{{ classe }}">{{ valor }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+
+            {# ----------- PARECERES MANUAIS ----------- #}
+            {% if modo_auditoria %}
+                {% if item.get('coaf', '')|trim|lower == 'sim' %}
+                <tr>
+                    <th>Parecer Final: Comunicar ao COAF</th>
+                    <td>SIM</td>
+                </tr>
+                {% endif %}
+                {% if item.get('arquivar_alerta', '')|trim|lower == 'sim' %}
+                <tr>
+                    <th>Parecer Final: Arquivar o alerta</th>
+                    <td>SIM</td>
+                </tr>
+                {% endif %}
+                {% if item.get('bloquear_cadastro', '')|trim|lower == 'sim' %}
+                <tr>
+                    <th>Parecer Final: Bloquear o cadastro</th>
+                    <td>SIM</td>
+                </tr>
+                {% endif %}
+                {% if item.get('solicitar_atualizacao', '')|trim|lower == 'sim' %}
+                <tr>
+                    <th>Parecer Final: Solicitar atualização</th>
+                    <td>SIM</td>
+                </tr>
+                {% endif %}
+                {% if item.get('outros_parecer', '')|trim|lower == 'sim' %}
+                <tr>
+                    <th>Parecer Final: Outros</th>
+                    <td>SIM</td>
+                </tr>
+                {% endif %}
+            {% endif %}
+            {# ----------- FIM PARECERES MANUAIS ----------- #}
+        </table>
+    {% endfor %}
+</body>
+</html>

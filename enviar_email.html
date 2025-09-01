@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Enviar Formulário por E-mail{% endblock %}
+
+{% block content %}
+<style>
+    main {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-top: 50px;
+    }
+    .card {
+        background: white;
+        padding: 30px 40px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        width: 400px;
+    }
+    h2 {
+        margin-top: 0;
+        text-align: center;
+    }
+    label {
+        display: block;
+        margin-top: 15px;
+        font-weight: bold;
+    }
+    input[type="email"],
+    input[type="text"],
+    textarea {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    button {
+        margin-top: 20px;
+        width: 100%;
+        background-color: #2b7a78;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #205e5b;
+    }
+</style>
+
+<div class="card">
+    <h2>Enviar Formulário GR10 A07 por E-mail</h2>
+    <form method="POST">
+        <label>Seu e-mail:</label>
+        <input type="email" name="email_usuario" required><br>
+
+        <label>E-mails dos destinatários (separe com ponto e vírgula):</label>
+        <input type="text" name="destinatarios" placeholder="ex: email1@ex.com; email2@ex.com" required><br>
+
+        <label>Observação:</label>
+        <textarea name="observacao" placeholder="Digite sua observação..."></textarea><br>
+
+        <label>Número do contrato:</label>
+        <input type="text" name="contrato" id="campoContrato" required readonly><br>
+
+        <button type="submit">Enviar</button>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    window.onload = function () {
+        const params = new URLSearchParams(window.location.search);
+        const contrato = params.get("contrato");
+        if (contrato) {
+            document.getElementById("campoContrato").value = contrato;
+        }
+    };
+</script>
+{% endblock %}

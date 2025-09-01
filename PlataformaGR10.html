@@ -1,0 +1,26 @@
+<!-- templates/PlataformaGR10.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+  .sidebar ul { list-style: none; margin: 0; padding: 0; }
+  .sidebar li { margin-bottom: 18px; }         /* espaçamento entre Consultar / Abrir / Relatórios */
+  .sidebar h2 { margin-bottom: 20px; font-size: 16px; font-weight: bold; }  /* espaço entre "Menu" e o 1º item */
+</style>
+
+<div style="display: flex; height: 100vh;">
+  <nav class="sidebar" style="background:#f4f4f4; padding:20px; box-shadow:2px 0 8px rgba(0,0,0,0.15);">
+    <h2>Menu</h2>
+    <ul>
+      <li><a href="/pesquisar">Consultar</a></li>
+      <li><a href="/formulario">Abrir GR10 A07</a></li>
+      <li><a href="/relatorios">Relatórios</a></li>  <!-- ✅ plural -->
+    </ul>
+  </nav>
+
+  <main style="flex-grow: 1; padding: 30px;">
+    <h2>Bem-vindo ao Sistema GR10 A07</h2>
+    <p>Selecione uma opção no menu lateral para continuar.</p>
+  </main>
+</div>
+{% endblock %}

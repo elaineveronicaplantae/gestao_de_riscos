@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório Analítico - Auditoria</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='relatorio_print.css') }}">
+</head>
+<body class="container mt-4">
+
+<header>
+    <h6 style="margin-bottom: 5px; font-size: 12px; color: #555;">
+        Relatório Analítico - Auditoria
+    </h6>
+    <div style="text-align: right; font-size: 10px;">Emitido em: {{ data_hora }}</div>
+</header>
+
+<h2 style="font-size: 22px; margin-top: 10px; margin-bottom: 15px; font-weight: bold;">
+    Relatório de Monitoramento, Seleção, Análise e Comunicação de Operações Atípicas
+</h2>
+
+<form method="get" class="row g-3 no-print">
+    <div class="form-check mb-2">
+        <input class="form-check-input" type="checkbox" id="modo_auditoria" name="modo_auditoria" value="1"
+               {% if modo_auditoria %}checked{% endif %}
+               onchange="verificarSenhaAuditoria(this)">
+        <label class="form-check-label" for="modo_auditoria">Modo Auditoria</label>
+    </div>
+    <input type="hidden" name="senha_auditoria" id="senha_auditoria" value="{{ senha_auditoria or '' }}">
+
+    <div class="col-md-3">
+        <label>Data Inicial</label>
+        <input type="date" name="data_inicio" class="form-control" value="{{ filtro_data_ini }}">
+    </div>
+    <div class="col-md-3">
+        <label>Data Final</label>
+        <input type="date" name="data_fim" class="form-control" value="{{ filtro_data_fim }}">
+    </div>
+    <div class="col-md-3">
+        <label>Campo de Filtro</label>
+        <select name="campo_filtro" class="form-select">
+            <option value="data_pagamento" {% if campo_filtro == 'data_pagamento' %}selected{% endif %}>Data de Pagamento</option>
+            <option value="data_apontamento" {% if campo_filtro == 'data_apontamento' %}selected{% endif %}>Data de Apontamento</option>
+            <option value="data_preenchimento_inicial" {% if campo_filtro == 'data_preenchimento_inicial' %}selected{% endif %}>Data Preenchimento Inicial</option>
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label>Filtrar campos em branco:</label>
+        <select name="filtro_campo_vazio" class="form-select">
+            <option value="">Não filtrar</option>
+            {% for campo in campos_filtro_branco %}
+                <option value="{{ campo }}" {% if filtro_campo_vazio == campo %}selected{% endif %}>
+                    {{ mapa_nomes_campos.get(campo, campo) }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3">
+        <label>Ordenar por:</label>
+        <select name="ordenacao" class="form-select">
+            <option value="">Sem ordenação</option>
+            <option value="gerente" {% if ordenacao == 'gerente' %}selected{% endif %}>Gerente + Data de Pagamento</option>
+            <option value="data_apontamento" {% if ordenacao == 'data_apontamento' %}selected{% endif %}>Data de Apontamento</option>
+            <option value="data_preenchimento_inicial" {% if ordenacao == 'data_preenchimento_inicial' %}selected{% endif %}>Data Preenchimento Inicial + Responsável</option>
+        </select>
+    </div>
+    <div class="col-md-12 mb-3">
+        <label><strong>Campos Extras (opcionais):</strong></label>
+        <div class="row">
+            {% for campo in campos_opcionais|unique %}
+                {% set mostrar = true %}
+                {% if not modo_auditoria and campo in [
+                    'parecer_diretoria', 'data_parecer_diretoria', 'responsavel_parecer_diretoria',
+                    'parecer_compliance', 'data_parecer_compliance', 'responsavel_parecer_compliance'
+                ] %}
+                    {% set mostrar = false %}
+                {% endif %}
+                {% if campo in ['data_preenchimento_inicial', 'responsavel_preenchimento_inicial', 'nome_gestor_relacionamento'] %}
+                    {% set mostrar = false %}
+                {% endif %}
+                {% if mostrar %}
+                    <div class="form-check col-md-2 mb-2">
+                        <input class="form-check-input" type="checkbox" name="campos_extras" value="{{ campo }}"
+                               {% if campo in campos_extras %}checked{% endif %}>
+                        <label class="form-check-label">{{ mapa_nomes_campos.get(campo, campo) }}</label>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+	
+	<div class="col-md-12 mt-2">
+    <button type="submit" class="btn btn-primary">Filtrar</button>
+    <button type="button" class="btn btn-secondary" onclick="window.print()">Imprimir / PDF</button>
+    <button type="button" class="btn btn-success" onclick="window.open('/exportar_pdf_auditoria' + window.location.search)">
+        Gerar PDF Auditoria
+    </button>
+</div>
+</form>
+
+<script>
+function verificarSenhaAuditoria(checkbox) {
+    if (checkbox.checked) {
+        var senha = prompt("Digite a senha para ativar o modo auditoria:");
+        if (senha !== "5566") {
+            checkbox.checked = false;
+            alert("Senha incorreta.");
+        } else {
+            document.getElementById('senha_auditoria').value = senha;
+            checkbox.form.submit();
+        }
+    }
+}
+</script>
+
+<table class="mt-4 table table-bordered table-striped">
+    <thead>
+        <tr>
+            {% if 'nome_gestor_relacionamento' in campos_extras %}<th>Nome Gestor</th>{% endif %}
+            <th>Contrato</th>
+            {% if 'cliente_nome' in campos_extras %}<th>Nome Cliente</th>{% endif %}
+            <th>Data Pagamento</th>
+            <th>Comentário Adicional - Apontamento</th>
+            <th>Responsável Apontamento</th>
+            <th>Pareceres Adicionais - Resposta</th>
+            <th>Responsável Resposta</th>
+            <th>Alertas</th>
+            {% if modo_auditoria %}
+                {% if 'parecer_compliance' in campos_extras %}<th>Parecer Compliance</th>{% endif %}
+                {% if 'data_parecer_compliance' in campos_extras %}<th>Data Parecer Compliance</th>{% endif %}
+                {% if 'responsavel_parecer_compliance' in campos_extras %}<th>Responsável Parecer Compliance</th>{% endif %}
+                {% if 'parecer_diretoria' in campos_extras %}<th>Parecer Diretoria</th>{% endif %}
+                {% if 'data_parecer_diretoria' in campos_extras %}<th>Data Parecer Diretoria</th>{% endif %}
+                {% if 'responsavel_parecer_diretoria' in campos_extras %}<th>Responsável Parecer Diretoria</th>{% endif %}
+                {% if 'data_preenchimento_inicial' in campos_extras %}<th>Data Preenchimento Inicial</th>{% endif %}
+                {% if 'responsavel_preenchimento_inicial' in campos_extras %}<th>Responsável Preenchimento Inicial</th>{% endif %}
+            {% endif %}
+            {% for campo in campos_extras %}
+                {% if campo not in [
+                    'cliente_nome', 'nome_gestor_relacionamento',
+                    'parecer_diretoria', 'data_parecer_diretoria', 'responsavel_parecer_diretoria',
+                    'parecer_compliance', 'data_parecer_compliance', 'responsavel_parecer_compliance',
+                    'data_preenchimento_inicial', 'responsavel_preenchimento_inicial'
+                ] %}
+                    <th>{{ mapa_nomes_campos.get(campo, campo) }}</th>
+                {% endif %}
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for linha in resultados %}
+        <tr>
+            {% if 'nome_gestor_relacionamento' in campos_extras %}
+                <td>{{ linha.get('nome_gestor_relacionamento', '') }}</td>
+            {% endif %}
+            <td>{{ linha.get('contrato', '') }}</td>
+            {% if 'cliente_nome' in campos_extras %}
+                <td>{{ linha.get('cliente_nome', '') }}</td>
+            {% endif %}
+            <td>{{ linha.get('data_pagamento', '') }}</td>
+            <td>{{ linha.get('comentario_adicional_apontamento', '') }}</td>
+            <td>{{ linha.get('responsavel_apontamento', '') }}</td>
+            <td>{{ linha.get('pareceres_adicionais_resposta', '') }}</td>
+            <td>{{ linha.get('q5_texto', '') }}</td>
+
+            <td>
+                {% for campo in alertas_campo %}
+                    {% if linha.get(campo, '').strip().lower() == 'sim' %}
+                        {{ mapa_nomes_campos.get(campo, campo.replace('_', ' ').capitalize()) }}<br>
+                    {% endif %}
+                {% endfor %}
+            </td>
+
+            {% if modo_auditoria %}
+                {% if 'parecer_compliance' in campos_extras %}
+                    <td>
+                        {% for campo in ['coaf', 'bloquear_cadastro', 'arquivar_alerta', 'solicitar_atualizacao', 'outros_parecer'] %}
+                            {% if linha.get(campo, '').strip().lower() == 'sim' %}
+                                {{ mapa_nomes_campos.get(campo, campo.replace('_', ' ').capitalize()) }}<br>
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                {% endif %}
+                {% if 'data_parecer_compliance' in campos_extras %}
+                    <td>{{ linha.get('data_parecer_compliance', '') }}</td>
+                {% endif %}
+                {% if 'responsavel_parecer_compliance' in campos_extras %}
+                    <td>{{ linha.get('responsavel_parecer_compliance', '') }}</td>
+                {% endif %}
+
+                {% if 'parecer_diretoria' in campos_extras %}
+                    <td>{{ linha.get('parecer_diretoria', '') }}</td>
+                {% endif %}
+                {% if 'data_parecer_diretoria' in campos_extras %}
+                    <td>{{ linha.get('data_parecer_diretoria', '') }}</td>
+                {% endif %}
+                {% if 'responsavel_parecer_diretoria' in campos_extras %}
+                    <td>{{ linha.get('responsavel_parecer_diretoria', '') }}</td>
+                {% endif %}
+
+                {% if 'data_preenchimento_inicial' in campos_extras %}
+                    <td>{{ linha.get('data_preenchimento_inicial', '') }}</td>
+                {% endif %}
+                {% if 'responsavel_preenchimento_inicial' in campos_extras %}
+                    <td>{{ linha.get('responsavel_preenchimento_inicial', '') }}</td>
+                {% endif %}
+            {% endif %}
+
+            {% for campo in campos_extras %}
+                {% if campo not in [
+                    'cliente_nome', 'nome_gestor_relacionamento',
+                    'parecer_diretoria', 'data_parecer_diretoria', 'responsavel_parecer_diretoria',
+                    'parecer_compliance', 'data_parecer_compliance', 'responsavel_parecer_compliance',
+                    'data_preenchimento_inicial', 'responsavel_preenchimento_inicial'
+                ] %}
+                    <td>{{ linha.get(campo, '') }}</td>
+                {% endif %}
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+</body>
+</html>

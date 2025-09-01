@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Pesquisa de Formulário{% endblock %}
+
+{% block content %}
+<style>
+    main {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .card-pesquisa {
+        background: white;
+        padding: 30px 40px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        width: 400px;
+    }
+    .card-pesquisa h2 {
+        margin-top: 0;
+        text-align: center;
+    }
+    .card-pesquisa label {
+        display: block;
+        margin-top: 15px;
+        font-weight: bold;
+    }
+    .card-pesquisa input[type="text"] {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    .card-pesquisa button {
+        margin-top: 20px;
+        width: 100%;
+        background-color: #2b7a78;
+        color: white;
+        padding: 10px;
+        border: none;
+        border-radius: 5px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    .card-pesquisa button:hover {
+        background-color: #205e5b;
+    }
+</style>
+
+<div class="card-pesquisa">
+    <h2>Pesquisa de Formulário</h2>
+    <form method="POST">
+        <label for="contrato">Número do Contrato:</label>
+        <input
+            type="text"
+            id="contrato"
+            name="contrato"
+            required
+            inputmode="numeric"
+            autocomplete="off"
+            pattern="\d+"
+            title="Digite apenas números, sem espaços ou símbolos"
+            oninput="this.value = this.value.replace(/\D/g, '')"
+            onpaste="setTimeout(() => this.value = this.value.replace(/\D/g, ''), 0)"
+            maxlength="20"
+        >
+        <button type="submit">Pesquisar</button>
+    </form>
+
+    {% if request.method == 'POST' %}
+        {% if resultado %}
+            <div class="mt-4 alert alert-info text-center">
+                Resultado encontrado para o contrato <strong>{{ resultado.contrato }}</strong>.
+            </div>
+        {% else %}
+            <div class="mt-4 alert alert-warning text-center">
+                Nenhum resultado encontrado para o contrato informado.
+            </div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

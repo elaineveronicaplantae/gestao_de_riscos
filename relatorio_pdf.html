@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Relatório Analítico - Auditoria</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='relatorio_pdf.css') }}">
+</head>
+<body>
+
+<header id="header">
+  <div class="wrapper-cabecalho">
+    <table class="tabela-cabecalho">
+      <tr>
+        <td class="col-esquerda">
+          <div class="logo-relatorio">PLANTAE AGROCRÉDITO</div>
+          <div class="titulo-relatorio">
+            Relatório de Monitoramento, Seleção, Análise e Comunicação de Operações Atípicas
+          </div>
+        </td>
+        <td class="col-direita">
+          <div class="data-emissao">Emitido em: {{ data_hora }}</div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</header>
+
+<div class="pagina">
+    <table class="relatorio">
+        <thead>
+            <tr>
+                <th>Contrato</th>
+                <th>Data Pagamento</th>
+                <th>Comentário Adicional</th>
+                <th>Responsável Apontamento</th>
+                <th>Pareceres Resposta</th>
+                <th>Responsável Resposta</th>
+                <th>Alertas</th>
+                {% if 'parecer_compliance' in campos_extras %}
+                    <th>Parecer Compliance</th>
+                {% endif %}
+                {% if 'parecer_diretoria' in campos_extras %}
+                    <th>Parecer Diretoria</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for linha in resultados %}
+            <tr>
+                <td>{{ linha.contrato }}</td>
+                <td>{{ linha.data_pagamento }}</td>
+                <td>{{ linha.comentario_adicional_apontamento }}</td>
+                <td>{{ linha.responsavel_apontamento }}</td>
+                <td>{{ linha.pareceres_adicionais_resposta }}</td>
+                <td>{{ linha.q5_texto }}</td>
+                <td>
+                    {% for campo in alertas_campo %}
+                        {% if linha.get(campo, '').strip().lower() == 'sim' %}
+                            {{ mapa_nomes_campos.get(campo, campo.replace('_', ' ').capitalize()) }}<br>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                {% if 'parecer_compliance' in campos_extras %}
+                <td>
+                    {% for campo in ['coaf', 'bloquear_cadastro', 'arquivar_alerta', 'solicitar_atualizacao', 'outros_parecer'] %}
+                        {% if linha.get(campo, '').strip().lower() == 'sim' %}
+                            {{ mapa_nomes_campos.get(campo, campo.replace('_', ' ').capitalize()) }}<br>
+                        {% endif %}
+                    {% endfor %}
+                </td>
+                {% endif %}
+                {% if 'parecer_diretoria' in campos_extras %}
+                <td>{{ linha.get('parecer_diretoria', '') }}</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="assinatura">
+        <p>Plantae Agrocrédito</p>
+        <p>Diretoria de Compliance</p>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Plataforma RAS{% endblock %}</title>
+
+    <!-- ✅ Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- ✅ Fonte institucional definida no Brandbook -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #ffffff;
+            color: #003543;
+            display: flex;
+            flex-direction: column;
+            font-size: 14px;
+        }
+
+        h1, h2, h3, h4, h5, h6, p, label, select, input, button, th, td {
+            font-family: 'Open Sans', sans-serif;
+            font-size: 14px;
+            font-weight: normal;
+            margin: 0;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        /* 🔹 Layout principal do cabeçalho */
+        header {
+            background-color: #00a870;
+            padding: 12px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-plantae {
+            height: 48px;
+            margin-left: 16px;
+            cursor: pointer; /* BLOCO: logo_como_botao_voltar */
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-nav span {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .header-nav form button {
+            background-color: #ffffff;
+            color: #00a870;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .header-nav form button:hover {
+            background-color: #e0e0e0;
+        }
+
+        .btn-voltar {
+            display: inline-block;
+            padding: 4px;
+            border-radius: 4px;
+            transition: background-color 0.2s ease-in-out;
+        }
+
+        .btn-voltar:hover {
+            background-color: rgba(0, 53, 67, 0.1);
+        }
+
+        .icon-voltar {
+            height: 32px;
+            width: 32px;
+        }
+
+        main {
+            flex-grow: 1;
+            padding: 32px;
+            background-color: #ffffff;
+        }
+
+        footer {
+            background-color: #003543;
+            color: #ffffff;
+            text-align: center;
+            padding: 16px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="header-left">
+        {% if show_back_button %}
+            <a href="#" class="btn-voltar" title="Voltar à página anterior">
+                <img src="{{ url_for('static', filename='img/plantae_icon_1_sem_fundo.png') }}" alt="Voltar" class="icon-voltar">
+            </a>
+        {% endif %}
+        <img src="{{ url_for('static', filename='img/logo_tagline.png') }}" alt="Logo Plantae" class="logo-plantae">
+    </div>
+
+    <nav class="header-nav">
+        <span>Olá, {{ session.get('usuario', 'Visitante') }}</span>
+        <form method="GET" action="{{ url_for('logout') }}" style="margin:0;">
+            <button type="submit">Sair</button>
+        </form>
+    </nav>
+</header>
+
+<main>
+    {% block content %}
+    {% endblock %}
+</main>
+
+<footer>
+    &copy; <span id="ano-atual">{{ current_year }}</span> Plantae Agrocrédito. Todos os direitos reservados.
+</footer>
+
+{% block scripts %}
+<script>
+    let logoutTimer;
+    let avisoTimer;
+
+    function resetInactivityTimer() {
+        clearTimeout(logoutTimer);
+        clearTimeout(avisoTimer);
+
+        // Aviso 1 minuto antes do logout (14 minutos = 840000 ms)
+        avisoTimer = setTimeout(() => {
+            if(confirm("Você está inativo há 14 minutos. O sistema fará logout em 1 minuto. Clique em OK para continuar logado.")) {
+                resetInactivityTimer(); // Reinicia se usuário interagir
+            }
+        }, 840000);
+
+        // Logout automático após 15 minutos de inatividade (900000 ms)
+        logoutTimer = setTimeout(() => {
+            window.location.href = "{{ url_for('logout') }}";
+        }, 900000);
+    }
+
+    ['mousemove', 'keydown', 'scroll', 'click', 'touchstart'].forEach(event => {
+        document.addEventListener(event, resetInactivityTimer, false);
+    });
+
+    resetInactivityTimer();
+</script>
+
+<!-- BLOCO: voltar_pelo_logo — faz o logo e o botão voltar usarem somente history.back() -->
+<script>
+(function voltar_pelo_logo() {
+    // Logo
+    const logo = document.querySelector('.logo-plantae');
+    if (logo) {
+        logo.setAttribute('role', 'button');
+        logo.setAttribute('tabindex', '0');
+        logo.setAttribute('aria-label', 'Voltar para a página anterior');
+
+        function voltar() {
+            window.history.back();
+        }
+
+        logo.addEventListener('click', voltar);
+        logo.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                voltar();
+            }
+        });
+    }
+
+    // Botão de voltar do header
+    const btnVoltar = document.querySelector('.btn-voltar');
+    if (btnVoltar) {
+        btnVoltar.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.history.back();
+        });
+    }
+})();
+</script>
+
+<!-- BLOCO: atualizar_ano_footer — garante que o ano esteja sempre correto -->
+<script>
+(function atualizar_ano_footer() {
+    const alvo = document.getElementById('ano-atual');
+    if (!alvo) return;
+    const ano = new Date().getFullYear().toString();
+    if (alvo.textContent !== ano) {
+        alvo.textContent = ano;
+    }
+})();
+</script>
+{% endblock %}
+
+</body>
+</html>
